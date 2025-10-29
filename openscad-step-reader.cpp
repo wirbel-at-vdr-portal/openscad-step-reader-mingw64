@@ -13,7 +13,37 @@
  */
 #include <iostream>
 #include <string>
-#include <err.h>
+#if !defined(__MINGW32__) && !defined(__MINGW64__)
+   #include <err.h>
+#else
+   #include <cstdio>
+   #include <cstdarg>
+   #include <cstring>
+   #include <cerrno>
+   void err(int eval, const char* fmt, ...) {
+       char buf[256];
+       va_list args;
+       va_start(args, fmt);
+       fprintf(stderr, "%s: ", __FUNCTION__);
+       vsnprintf(buf, sizeof(buf), fmt, args);
+       fprintf(stderr, "%s - %s\n", buf, strerror(errno));
+       va_end(args);
+       exit(eval);
+       }
+
+
+   void errx(int eval, const char* fmt, ...) {
+       char buf[256];
+       va_list args;
+       va_start(args, fmt);
+       fprintf(stderr, "%s: ", __FUNCTION__);
+       vsnprintf(buf,sizeof(buf), fmt, args);
+       fprintf(stderr, " %s\n", buf);
+       va_end(args);
+       exit(eval);
+       }
+
+#endif
 #include <getopt.h>
 
 #include <STEPControl_Reader.hxx>
@@ -82,7 +112,7 @@ void show_help()
 
 void show_version()
 {
-	std::cout << 42 << endl;
+	std::cout << 42 << std::endl;
 	exit(0);
 }
 

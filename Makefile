@@ -18,8 +18,14 @@
 ##
 ##
 
-CPPFLAGS=-I/usr/include/opencascade
+CPPFLAGS=-I/mingw64/include/opencascade
 CXXFLAGS=-std=c++11 -g -O0
+
+# fixes missing cmath defines on mingw64:
+CXXFLAGS+=-D_USE_MATH_DEFINES
+CXXFLAGS+=-Wfatal-errors
+
+
 
 LDFLAGS=-lTKSTL -lTKXDESTEP -lTKBinXCAF -lTKXmlXCAF -lTKXDEIGES -lTKXCAF \
  -lTKIGES -lTKSTEP -lTKSTEP209 -lTKSTEPAttr -lTKSTEPBase -lTKXSBase \
@@ -33,12 +39,10 @@ LDFLAGS=-lTKSTL -lTKXDESTEP -lTKBinXCAF -lTKXmlXCAF -lTKXDEIGES -lTKXCAF \
  -lTKOpenGl -lTKV3d -lTKService -lTKXMesh -lTKMesh -lTKOffset \
  -lTKFeat -lTKFillet -lTKHLR -lTKBool -lTKBO -lTKShHealing \
  -lTKPrim -lTKTopAlgo -lTKGeomAlgo -lTKBRep -lTKGeomBase \
- -lTKG3d -lTKG2d \
- \
- /usr/lib/x86_64-linux-gnu/libTKMath.so.7.3.0 \
- /usr/lib/x86_64-linux-gnu/libTKernel.so.7.3.0 \
- \
- -lfreetype -lpthread -lrt -lstdc++ -ldl -lm\
+ -lTKG3d -lTKG2d -lTKMath -lTKernel
+
+LDFLAGS+=-lfreetype -lpthread -lstdc++ -lm
+# -lrt -ldl\
 
 
 all: openscad-step-reader
