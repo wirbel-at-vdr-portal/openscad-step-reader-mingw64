@@ -110,6 +110,3 @@ public:
      os << "];" << std::endl;
      }
 };
-
-
-typedef std::vector<Face> Face_vector;
