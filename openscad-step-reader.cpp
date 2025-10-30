@@ -19,9 +19,10 @@
    #include <err.h>
 #else
    #include <cstdio>
-   #define E(fmt...) fprintf(stderr,  "%s:%d: %s\n", __FUNCTION__, __LINE__, fmt);
-   #define errx(eval, fmt...) E(fmt);  exit(eval);
-   #define err(eval, fmt...)  E(fmt);  fprintf(stderr,  " - %s\n", strerror(errno)); exit(eval);
+   #define E(fmt...)          do { fprintf(stderr,  "%s:%d: ", __FUNCTION__, __LINE__); fprintf(stderr, fmt); fprintf(stderr, "\n"); } while(0)
+   #define errx(eval, fmt...) do { E(fmt);  exit(eval); } while(0)
+   #define err(eval, fmt...)  do { E(fmt);  fprintf(stderr,  " - %s\n", strerror(errno)); exit(eval); } while(0)
+   #define DBG(fmt...)        do { if (debug) E(fmt); } while(0)
 #endif
 
 #include <STEPControl_Reader.hxx>
@@ -33,16 +34,19 @@
 #include "openscad-triangle-writer.h"
 #include "explore-shape.h"
 
+bool debug = false;
+
 static struct option options[] = {
-	{"help",      no_argument, 0, 'h' },
-	{"version",   no_argument, 0, 'V' },
-	{"stl-ascii", no_argument, 0, 'a' },
-	{"stl-scad",  no_argument, 0, 's' },
-	{"stl-faces", no_argument, 0, 'f' },
-	{"stl-occt",  no_argument, 0, 'o' },
-	{"stl-lin-tol", required_argument, 0, 'L'},
-	{"explore",   no_argument, 0, 'e' },
-   {0, 0, 0, 0}
+  {"help"       , no_argument      , 0, 'h' },
+  {"version"    , no_argument      , 0, 'V' },
+  {"stl-ascii"  , no_argument      , 0, 'a' },
+  {"stl-scad"   , no_argument      , 0, 's' },
+  {"stl-faces"  , no_argument      , 0, 'f' },
+  {"stl-occt"   , no_argument      , 0, 'o' },
+  {"stl-lin-tol", required_argument, 0, 'L' },
+  {"explore"    , no_argument      , 0, 'e' },
+  {"debug"      , no_argument      , 0, 'd' },
+  {0, 0, 0, 0}
 };
 
 void show_help()
@@ -59,6 +63,7 @@ void show_help()
 "options are:\n"
 "   -h, --help         this help screen\n"
 "   -V, --version      version information\n"
+"   -d, --debug        show debug info\n"
 "\n"
 "   -o, --stl-occt     convert the input STEP file into ASCII STL file\n"
 "                      using OpenCASCADE code. This should be the baseline\n"
@@ -110,49 +115,26 @@ int main(int argc, char *argv[])
 		OUT_EXPLORE
 	} output = OUT_UNDEFINED;
 
-	while ((c = getopt_long(argc, argv, "hVasfoL:e", options, NULL))!=-1) {
-		switch (c)
-		{
-		case 'h':
-			show_help();
-			break;
-
-		case 'v':
-			show_version();
-			break;
-
-		case 'a':
-			output = OUT_STL_ASCII;
-			break;
-
-		case 's':
-			output = OUT_STL_SCAD;
-			break;
-
-		case 'f':
-			output = OUT_STL_FACES;
-			break;
-
-		case 'o':
-			output = OUT_STL_OCCT;
-			break;
-
-		case 'e':
-			output = OUT_EXPLORE;
-			break;
-
-		case 'L':
-			stl_lin_tol = atof(optarg);
-			if (stl_lin_tol<=0)
-				errx(1,"invalid tolerance value '%s'",optarg);
-			break;
-
-		}
-	}
+	while((c = getopt_long(argc, argv, "hVdasfoeL:", options, NULL)) != -1) {
+      switch(c) {
+         case 'h': show_help();            break;
+         case 'V': show_version();         break;
+         case 'd': debug = true;           break;
+         case 'a': output = OUT_STL_ASCII; break;
+         case 's': output = OUT_STL_SCAD;  break;
+         case 'f': output = OUT_STL_FACES; break;
+         case 'o': output = OUT_STL_OCCT;  break;
+         case 'e': output = OUT_EXPLORE;   break;
+         case 'L':
+            stl_lin_tol = atof(optarg);
+            if (stl_lin_tol <= 0)
+               errx(1,"invalid tolerance value '%s'",optarg);
+            break;
+		   }
+	   }
 
 	if (optind >= argc)
 		errx(1,"missing input STEP filename. Use --help for usage information");
-
 	if (output == OUT_UNDEFINED)
 		errx(1,"missing output format option. Use --help for usage information");
 
@@ -168,6 +150,8 @@ int main(int argc, char *argv[])
 	enum IFSelect_ReturnStatus s = Reader.ReadFile(filename.c_str());
 	if (s != IFSelect_RetDone)
 		err(1,"failed to load STEP file '%s'", filename.c_str());
+   else
+      DBG("loaded STEP file '%s'", filename.c_str());
 	Reader.TransferRoots();
 	shape = Reader.OneShape();
 
