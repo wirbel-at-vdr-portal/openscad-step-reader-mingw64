@@ -7,6 +7,9 @@ visit the original authors github repository, see
 
 A few changes to the sources have been made as well, to be compilable.
 
+NOTE: This code needs Open CASCADE, install it with
+      pacman -S mingw-w64-x86_64-opencascade
+
 Original README below.
 
 #-------------------------------------------------------------------------------
