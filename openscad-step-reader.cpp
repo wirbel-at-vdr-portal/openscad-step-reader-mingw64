@@ -42,6 +42,7 @@ static struct option options[] = {
 	{"stl-occt",  no_argument, 0, 'o' },
 	{"stl-lin-tol", required_argument, 0, 'L'},
 	{"explore",   no_argument, 0, 'e' },
+   {0, 0, 0, 0}
 };
 
 void show_help()
