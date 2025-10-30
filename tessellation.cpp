@@ -64,62 +64,57 @@
 
 #include "tessellation.h"
 
-Face tessellate_face(const TopoDS_Face &aFace)
-{
-	Face output_face;
+Face tessellate_face(const TopoDS_Face& aFace) {
+  Face output_face;
 
-	/* This code is based on
-	   https://www.opencascade.com/content/how-get-triangles-vertices-data-absolute-coords-native-opengl-rendering
-	*/
-	TopAbs_Orientation faceOrientation = aFace.Orientation();
+  /* This code is based on
+   * https://www.opencascade.com/content/how-get-triangles-vertices-data-absolute-coords-native-opengl-rendering
+   */
+  TopAbs_Orientation faceOrientation = aFace.Orientation();
 
-	TopLoc_Location aLocation;
-	Handle(Poly_Triangulation) aTr = BRep_Tool::Triangulation(aFace,aLocation);
+  TopLoc_Location aLocation;
+  Handle(Poly_Triangulation) aTr = BRep_Tool::Triangulation(aFace,aLocation);
 
-	if(!aTr.IsNull())
-	{
-		TColgp_Array1OfPnt aPoints(1, aTr->NbNodes());
-		for(Standard_Integer i = 1; i < aPoints.Size()+1; i++)
-			aPoints(i) = aTr->Node(i).Transformed(aLocation);
+  if (!aTr.IsNull()) {
+     TColgp_Array1OfPnt aPoints(1, aTr->NbNodes());
+     for(int i=1; i<aPoints.Size()+1; i++)
+        aPoints(i) = aTr->Node(i).Transformed(aLocation);
 
-		Standard_Integer nnn = aTr->NbTriangles();
-		Standard_Integer nt,n1,n2,n3;
+     int nnn = aTr->NbTriangles(), nt, n1, n2, n3;
 
-		for( nt = 1 ; nt < nnn+1 ; nt++)
-		{
-			aTr->Triangle(nt).Get(n1,n2,n3);
+     for(nt=1; nt<nnn+1; nt++) {
+        aTr->Triangle(nt).Get(n1, n2, n3);
 
-			if (faceOrientation != TopAbs_Orientation::TopAbs_FORWARD)
-			{
-				int tmp = n1;
-				n1 = n3;
-				n3 = tmp;
-			}
+        if (faceOrientation != TopAbs_Orientation::TopAbs_FORWARD) {
+           std::swap(n1, n3);
+           /*
+           int tmp = n1;
+           n1 = n3;
+           n3 = tmp;
+           */
+           }
 
-			gp_Pnt aPnt1 = aPoints(n1);
-			gp_Pnt aPnt2 = aPoints(n2);
-			gp_Pnt aPnt3 = aPoints(n3);
+        gp_Pnt aPnt1 = aPoints(n1);
+        gp_Pnt aPnt2 = aPoints(n2);
+        gp_Pnt aPnt3 = aPoints(n3);
 
-			const Triangle tr(aPnt1, aPnt2, aPnt3);
-			output_face.add(tr);
-		}
-	}
+        const Triangle tr(aPnt1, aPnt2, aPnt3);
+        output_face.add(tr);
+        }
+     }
 
-	return output_face;
+  return output_face;
 }
 
 
-std::vector<Face> tessellate_shape(const TopoDS_Shape& shape)
-{
-	std::vector<Face> output_faces;
+std::vector<Face> tessellate_shape(const TopoDS_Shape& shape) {
+  std::vector<Face> output_faces;
 
-	for (TopExp_Explorer FaceExp(shape, TopAbs_FACE); FaceExp.More(); FaceExp.Next())
-	{
-		const TopoDS_Face &aFace = TopoDS::Face(FaceExp.Current());
+  for(TopExp_Explorer FaceExp(shape, TopAbs_FACE); FaceExp.More(); FaceExp.Next()) {
+     const TopoDS_Face& aFace = TopoDS::Face(FaceExp.Current());
+     const Face& f = tessellate_face(aFace);
+     output_faces.push_back(f);
+     }
 
-		const Face &f = tessellate_face(aFace);
-		output_faces.push_back(f);
-	}
-
-	return output_faces;
+  return output_faces;
 }
