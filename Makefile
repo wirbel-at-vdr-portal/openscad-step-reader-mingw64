@@ -1,58 +1,30 @@
-## This make file is hard-coded to work on Debian 10 with the following
-## packages:
-##  apt-get install libocct-data-exchange-dev libocct-draw-dev libocct-foundation-dev \
-##                libocct-modeling-algorithms-dev libocct-modeling-data-dev \
-##                libocct-ocaf-dev libocct-visualization-dev \
-##                libtbb-dev
-##
-## Other systems will likely need adjustments.
-##
-## An easy(?) way to see how to build with OpenCASCADE on your system
-## is to follow the installation examples of:
-##      https://github.com/miho/OCC-CSG/
-##
-## After building it, run:
-##     cmake .
-##     make VERBOSE=1
-## And you'll see the exact G++ command-line that was used.
-##
-##
+# Makefile for mingw64.
+# Install first opencascade: pacman -S mingw-w64-x86_64-opencascade
 
-CPPFLAGS=-I/mingw64/include/opencascade
+
+CPPFLAGS=-I./include -I/mingw64/include/opencascade -D_USE_MATH_DEFINES=1 -Wfatal-errors
 CXXFLAGS=-std=c++11 -g -O0
 
-# fixes missing cmath defines on mingw64:
-CXXFLAGS+=-D_USE_MATH_DEFINES
-CXXFLAGS+=-Wfatal-errors
+# all dlls installed by pacman for package 'mingw-w64-x86_64-opencascade',
+# see pacman -Ql mingw-w64-x86_64-opencascade
+# unfortunally, opencascade doesnt have pkgconfig support.
+TKDLLS_W_EXT = $(sort $(wildcard /mingw64/bin/libTK*.dll))
+TKDLLS_WO_EXT=$(TKDLLS_W_EXT:.dll=)
+OPENCASCADE_DLLS=$(subst /mingw64/bin/lib,-l,$(TKDLLS_WO_EXT))
 
 
-
-LDFLAGS=-lTKSTL -lTKXDESTEP -lTKBinXCAF -lTKXmlXCAF -lTKXDEIGES -lTKXCAF \
- -lTKIGES -lTKSTEP -lTKSTEP209 -lTKSTEPAttr -lTKSTEPBase -lTKXSBase \
- -lTKStd -lTKStdL -lTKXml -lTKBin -lTKXmlL -lTKBinL -lTKCAF -lTKXCAF \
- -lTKLCAF -lTKCDF -lTKMeshVS -lTKOpenGl -lTKV3d -lTKService \
- -lTKXMesh -lTKMesh -lTKOffset -lTKFeat -lTKFillet -lTKHLR -lTKBool \
- -lTKBO -lTKShHealing -lTKPrim -lTKTopAlgo -lTKGeomAlgo -lTKBRep \
- -lTKGeomBase -lTKG3d -lTKG2d -lTKIGES -lTKSTEP -lTKSTEP209 \
- -lTKSTEPAttr -lTKSTEPBase -lTKXSBase -lTKStd -lTKStdL -lTKXml \
- -lTKBin -lTKXmlL -lTKBinL -lTKCAF -lTKLCAF -lTKCDF -lTKMeshVS \
- -lTKOpenGl -lTKV3d -lTKService -lTKXMesh -lTKMesh -lTKOffset \
- -lTKFeat -lTKFillet -lTKHLR -lTKBool -lTKBO -lTKShHealing \
- -lTKPrim -lTKTopAlgo -lTKGeomAlgo -lTKBRep -lTKGeomBase \
- -lTKG3d -lTKG2d -lTKMath -lTKernel
-
-LDFLAGS+=-lfreetype -lpthread -lstdc++ -lm
-# -lrt -ldl\
-
+LDFLAGS=-lm -lfreetype -pthread -lstdc++ $(OPENCASCADE_DLLS)
+SOURCES := $(sort $(wildcard *.cpp))
+OBJS     = $(SOURCES:.cpp=.o)
 
 all: openscad-step-reader
 
-openscad-step-reader: openscad-step-reader.o \
-		      tessellation.o \
-		      openscad-triangle-writer.o \
-		      explore-shape.o
+openscad-step-reader: $(OBJS)
+	g++ $(OBJS) -o openscad-step-reader $(LDFLAGS)
 
-openscad-step-reader.o: openscad-step-reader.cpp triangle.h
+
+# some manual dependency tracking for each object file:
+openscad-step-reader.o: openscad-step-reader.cpp triangle.h tessellation.h openscad-triangle-writer.h explore-shape.h
 
 tessellation.o: tessellation.cpp tessellation.h triangle.h
 
@@ -63,4 +35,8 @@ explore-shape.o: explore-shape.cpp explore-shape.h
 
 .PHONY: clean
 clean:
-	rm -f explore-shape.o openscad-step-reader.o openscad-step-reader tessellation.o openscad-triangle-writer.o
+	rm -f $(OBJS) openscad-step-reader openscad-step-reader.exe
+
+
+testdll:
+	@echo $(DLLS)
