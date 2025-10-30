@@ -71,9 +71,7 @@ public:
      triangles.push_back(tr);
      }
   void add(const Face& f) {
-     triangles.insert(triangles.end(),
-                      f.triangles.begin(),
-                      f.triangles.end());
+     triangles.insert(triangles.end(), f.triangles.begin(), f.triangles.end());
      }
   void write_ascii_stl(std::ostream& os) const {
      for(auto& t:triangles) {

@@ -12,5 +12,6 @@
  * GNU Lesser General Public License for more details.
  */
 #pragma once
+#include <TopoDS_Shape.hxx> // TopoDS_Shape
 
 void explore_shape(const TopoDS_Shape& shape);
