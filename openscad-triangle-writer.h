@@ -14,6 +14,8 @@
 #ifndef __OPENSCAD_TRIANGLE_WRITER__
 #define __OPENSCAD_TRIANGLE_WRITER__
 
+#include "triangle.h" // Face_vector
+
 void write_faces_scad (const Face_vector& faces);
 
 void write_triangles_ascii_stl(const Face_vector& faces);
