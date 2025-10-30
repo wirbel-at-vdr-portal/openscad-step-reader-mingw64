@@ -67,13 +67,13 @@ private:
   std::vector<Triangle> triangles;
 public:
   Face() {};
-  void addTriangle(const Triangle& tr) {
+  void add(const Triangle& tr) {
      triangles.push_back(tr);
      }
-  void add_face(const Face& other_face) {
+  void add(const Face& f) {
      triangles.insert(triangles.end(),
-                      other_face.triangles.begin(),
-                      other_face.triangles.end());
+                      f.triangles.begin(),
+                      f.triangles.end());
      }
   void write_ascii_stl(std::ostream& os) const {
      for(auto& t:triangles) {

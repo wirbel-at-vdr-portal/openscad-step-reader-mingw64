@@ -39,7 +39,7 @@ void write_triangle_scad(const std::vector<Face>& faces)
 	// Merge all faces (i.e. triangles from all faces)
 	// into one "face" (just a container, no special meaning of a "face").
 	for (auto &f : faces)
-		all.add_face(f);
+		all.add(f);
 
 	// Write vector of points and faces
 	std::cout << "points = " ;

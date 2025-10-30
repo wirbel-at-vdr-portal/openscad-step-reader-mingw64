@@ -101,7 +101,7 @@ Face tessellate_face(const TopoDS_Face &aFace)
 			gp_Pnt aPnt3 = aPoints(n3);
 
 			const Triangle tr(aPnt1, aPnt2, aPnt3);
-			output_face.addTriangle(tr);
+			output_face.add(tr);
 		}
 	}
 
