@@ -17,9 +17,8 @@
 
 #include <gp_Pnt.hxx>
 
+#include "openscad-triangle-writer.h"
 #include "triangle.h"
-
-
 
 /* Write the faces/triangles as an ASCII stl file
    (with invalud 'normals' value - but these are ignored anyhow in OpenSCAD */
