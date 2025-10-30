@@ -11,8 +11,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Lesser General Public License for more details.
  */
-#ifndef __OPENSCAD_TRIANGLE_WRITER__
-#define __OPENSCAD_TRIANGLE_WRITER__
+#pragma once
 
 #include "triangle.h" // Face_vector
 
@@ -21,6 +20,3 @@ void write_faces_scad (const Face_vector& faces);
 void write_triangles_ascii_stl(const Face_vector& faces);
 
 void write_triangle_scad(const Face_vector& faces);
-
-
-#endif

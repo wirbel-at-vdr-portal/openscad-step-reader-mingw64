@@ -11,8 +11,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU Lesser General Public License for more details.
  */
-#ifndef __TRIANGLE__
-#define __TRIANGLE__
+#pragma once
 
 class Point {
 	double _x,_y,_z;
@@ -121,6 +120,3 @@ public:
 		}
 };
 typedef std::vector<Face> Face_vector;
-
-
-#endif
