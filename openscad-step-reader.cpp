@@ -13,38 +13,16 @@
  */
 #include <iostream>
 #include <string>
+#include <getopt.h>
+
 #if !defined(__MINGW32__) && !defined(__MINGW64__)
    #include <err.h>
 #else
    #include <cstdio>
-   #include <cstdarg>
-   #include <cstring>
-   #include <cerrno>
-   void err(int eval, const char* fmt, ...) {
-       char buf[256];
-       va_list args;
-       va_start(args, fmt);
-       fprintf(stderr, "%s: ", __FUNCTION__);
-       vsnprintf(buf, sizeof(buf), fmt, args);
-       fprintf(stderr, "%s - %s\n", buf, strerror(errno));
-       va_end(args);
-       exit(eval);
-       }
-
-
-   void errx(int eval, const char* fmt, ...) {
-       char buf[256];
-       va_list args;
-       va_start(args, fmt);
-       fprintf(stderr, "%s: ", __FUNCTION__);
-       vsnprintf(buf,sizeof(buf), fmt, args);
-       fprintf(stderr, " %s\n", buf);
-       va_end(args);
-       exit(eval);
-       }
-
+   #define E(fmt...) fprintf(stderr,  "%s:%d: %s\n", __FUNCTION__, __LINE__, fmt);
+   #define errx(eval, fmt...) E(fmt);  exit(eval);
+   #define err(eval, fmt...)  E(fmt);  fprintf(stderr,  " - %s\n", strerror(errno)); exit(eval);
 #endif
-#include <getopt.h>
 
 #include <STEPControl_Reader.hxx>
 #include <StlAPI_Writer.hxx>
