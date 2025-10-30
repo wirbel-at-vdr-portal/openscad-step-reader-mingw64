@@ -1,3 +1,17 @@
+# About
+
+This a mingw64 version of openscad-step-reader to play with, for details please
+visit the original authors github repository, see
+
+ https://github.com/agordon/openscad-step-reader
+
+A few changes to the sources have been made as well, to be compilable.
+
+Original README below.
+
+#-------------------------------------------------------------------------------
+
+
 # openscad-step-reader
 
 A proof-of-concept project, testing OpenSCAD / STEP files loading.
