@@ -36,6 +36,8 @@
 #include <GeomAbs_SurfaceType.hxx>
 #include <BRepAdaptor_Surface.hxx>
 
+#include "explorer-shape.h"
+
 /* good resources:
    https://github.com/miho/OCC-CSG
    https://github.com/lvk88/OccTutorial
