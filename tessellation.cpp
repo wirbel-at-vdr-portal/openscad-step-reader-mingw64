@@ -62,8 +62,6 @@
 #include <BRepTools_WireExplorer.hxx>
 #include <math.hxx>
 
-
-#include "triangle.h"
 #include "tessellation.h"
 
 Face tessellate_face(const TopoDS_Face &aFace)
@@ -111,9 +109,9 @@ Face tessellate_face(const TopoDS_Face &aFace)
 }
 
 
-Face_vector tessellate_shape (const TopoDS_Shape& shape)
+std::vector<Face> tessellate_shape(const TopoDS_Shape& shape)
 {
-	Face_vector output_faces;
+	std::vector<Face> output_faces;
 
 	for (TopExp_Explorer FaceExp(shape, TopAbs_FACE); FaceExp.More(); FaceExp.Next())
 	{

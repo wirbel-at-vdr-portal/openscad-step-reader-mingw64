@@ -22,7 +22,7 @@
 
 /* Write the faces/triangles as an ASCII stl file
    (with invalud 'normals' value - but these are ignored anyhow in OpenSCAD */
-void write_triangles_ascii_stl(const Face_vector& faces)
+void write_triangles_ascii_stl(const std::vector<Face>& faces)
 {
 	std::cout << "solid" << std::endl;
 	for (auto &f : faces)
@@ -32,7 +32,7 @@ void write_triangles_ascii_stl(const Face_vector& faces)
 
 /* Write the faces/triangles as two vectors (one "POINTS", one "FACES")
    that will be used with a single call to "polyhedron"). */
-void write_triangle_scad(const Face_vector& faces)
+void write_triangle_scad(const std::vector<Face>& faces)
 {
 	Face all;
 
@@ -84,7 +84,7 @@ const char* colors[NUM_COLORS] = {
 
    In non-preview mode,
    Include code to merge all the vectors and make a single "Polyhedron" call. */
-void write_faces_scad (const Face_vector& faces)
+void write_faces_scad (const std::vector<Face>& faces)
 {
 	int i = 1;
 	for (auto &f : faces) {

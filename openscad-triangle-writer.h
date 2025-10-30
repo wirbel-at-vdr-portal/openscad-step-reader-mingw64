@@ -13,10 +13,8 @@
  */
 #pragma once
 
-#include "triangle.h" // Face_vector
+#include "triangle.h" // Face, std::vector
 
-void write_faces_scad (const Face_vector& faces);
-
-void write_triangles_ascii_stl(const Face_vector& faces);
-
-void write_triangle_scad(const Face_vector& faces);
+void write_faces_scad(const std::vector<Face>& faces);
+void write_triangles_ascii_stl(const std::vector<Face>& faces);
+void write_triangle_scad(const std::vector<Face>& faces);

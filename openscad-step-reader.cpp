@@ -159,7 +159,7 @@ int main(int argc, char *argv[])
 	BRepMesh_IncrementalMesh mesh( shape, stl_lin_tol);
 	mesh.Perform();
 
-	Face_vector faces;
+	std::vector<Face> faces;
 
 	if ( (output==OUT_STL_ASCII) || (output==OUT_STL_SCAD) || (output==OUT_STL_FACES) )
 		faces = tessellate_shape (shape);

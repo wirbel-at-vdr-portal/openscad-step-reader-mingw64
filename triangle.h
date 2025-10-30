@@ -12,111 +12,104 @@
  * GNU Lesser General Public License for more details.
  */
 #pragma once
+#include <vector>   // std::vector
+#include <iostream> // std::ostream
 
 class Point {
-	double _x,_y,_z;
+private:
+  double px, py, pz;
 public:
-	Point() : _x(0), _y(0), _z(0) {};
-	Point(double x, double y, double z):_x(x),_y(y),_z(z) {};
-	Point(const gp_Pnt& p) : _x(p.X()),_y(p.Y()),_z(p.Z()) {} ;
-	double x() const { return _x; };
-	double y() const { return _y; };
-	double z() const { return _z; };
-
-	void write_ascii_stl(std::ostream &ostrm) const
-		{
-			ostrm << "vertex " << _x << " " << _y << " " << _z ;
-		}
-
+  Point() : px(0.0d), py(0.0d), pz(0.0d) {};
+  Point(double X, double Y, double Z) : px(X), py(Y), pz(Z) {}
+  Point(const gp_Pnt& point) : px(point.X()), py(point.Y()), pz(point.Z()) {}
+  double x(void) const { return px; }
+  double y(void) const { return py; }
+  double z(void) const { return pz; }
+  void write_ascii_stl(std::ostream& os) const {
+     os << "vertex " << px << " " << py << " " << pz;
+     }
 };
-static std::ostream & operator << (std::ostream &out, const Point &p)
-{
-	out << "[" << p.x() << "," << p.y() << "," << p.z() << "]";
-	return out;
+
+
+static std::ostream& operator <<(std::ostream& os, const Point& p) {
+  os << "[" << p.x() << "," << p.y() << "," << p.z() << "]";
+  return os;
 }
 
 
 class Triangle {
-	Point _p1, _p2, _p3;
+private:
+  Point p1, p2, p3;
 public:
-	Triangle() {} ;
-	Triangle(const Point& p1, const Point& p2, const Point& p3) : _p1(p1), _p2(p2), _p3(p3) {}
+  Triangle() {} ;
+  Triangle(const Point& P1, const Point& P2, const Point& P3) : p1(P1), p2(P2), p3(P3) {}
+  void write_points_vector(std::ostream& os) const {
+     os << p1 << "," << p2 << "," << p3;
+     }
+  void write_ascii_stl(std::ostream& os) const {
+     os << "    ";
+     p1.write_ascii_stl(os);
+     os << std::endl;
 
-	void write_points_vector(std::ostream &ostrm) const
-		{
-			ostrm << _p1 << "," << _p2 << "," << _p3 ;
-		}
+     os << "    ";
+     p2.write_ascii_stl(os);
+     os << std::endl;
 
-	void write_ascii_stl(std::ostream &ostrm) const
-		{
-			ostrm << "    " ;
-			_p1.write_ascii_stl(ostrm);
-			ostrm << std::endl;
-
-			ostrm << "    " ;
-			_p2.write_ascii_stl(ostrm);
-			ostrm << std::endl;
-
-			ostrm << "    " ;
-			_p3.write_ascii_stl(ostrm);
-			ostrm << std::endl;
-		}
-
+     os << "    ";
+     p3.write_ascii_stl(os);
+     os << std::endl;
+     }
 };
-
 
 
 class Face {
-	std::vector<Triangle> triangles;
+private:
+  std::vector<Triangle> triangles;
 public:
-	Face() {};
-	void addTriangle(const Triangle& tr) { triangles.push_back(tr); };
-
-	void add_face(const Face& other_face)
-		{
-			triangles.insert(triangles.end(),
-					 other_face.triangles.begin(),
-					 other_face.triangles.end());
-		}
-
-	void write_ascii_stl(std::ostream &ostrm) const
-		{
-			for (auto &t : triangles) {
-				ostrm << " facet normal 42 42 42" << std::endl;
-				ostrm << "   outer loop" << std::endl;
-				t.write_ascii_stl(ostrm);
-				ostrm << "   endloop" << std::endl;
-				ostrm << " endfacet" << std::endl;
-			}
-		}
-
-	void write_points_vector(std::ostream &ostrm) const
-		{
-			int i = 1 ;
-			ostrm << "[" << std::endl;
-			for (auto &t : triangles) {
-				ostrm << "  ";
-				t.write_points_vector(ostrm);
-				ostrm << ",";
-				if (i==1 || (i%10==0 && triangles.size()>10))
-					ostrm << " // Triangle " << i << " / " << triangles.size();
-				ostrm << std::endl;
-				++i;
-			}
-			ostrm << "];" << std::endl;
-		}
-
-	void write_face_vector(std::ostream &ostrm) const
-		{
-			ostrm << "[" << std::endl;
-			for (int i=0;i<triangles.size();++i) {
-				int idx = i*3;
-				ostrm << "  [" << idx << "," << (idx+1) << "," << (idx+2) << "],";
-				if (i==0 || ((i+1)%10==0 && triangles.size()>10))
-					ostrm << " // Triangle " << (i+1) << " / " << triangles.size();
-				ostrm << std::endl;
-			}
-			ostrm << "];" << std::endl;
-		}
+  Face() {};
+  void addTriangle(const Triangle& tr) {
+     triangles.push_back(tr);
+     }
+  void add_face(const Face& other_face) {
+     triangles.insert(triangles.end(),
+                      other_face.triangles.begin(),
+                      other_face.triangles.end());
+     }
+  void write_ascii_stl(std::ostream& os) const {
+     for(auto& t:triangles) {
+        os << " facet normal 42 42 42" << std::endl;
+        os << "   outer loop" << std::endl;
+        t.write_ascii_stl(os);
+        os << "   endloop" << std::endl;
+        os << " endfacet" << std::endl;
+        }
+     }
+  void write_points_vector(std::ostream& os) const {
+     int i = 1;
+     os << "[" << std::endl;
+     for(auto& t:triangles) {
+        os << "  ";
+        t.write_points_vector(os);
+        os << ",";
+        if (i==1 || (i%10==0 && triangles.size()>10))
+           os << " // Triangle " << i << " / " << triangles.size();
+        os << std::endl;
+        i++;
+        }
+     os << "];" << std::endl;
+     }
+  void write_face_vector(std::ostream& os) const {
+     os << "[" << std::endl;
+     for(int i=0; i<triangles.size(); i++) {
+        int idx = i*3;
+        os << "  [" << idx << "," << (idx+1) << "," << (idx+2) << "],";
+        if (i==0 || ((i+1)%10==0 && triangles.size()>10))
+           os << " // Triangle " << (i+1) << " / " << triangles.size();
+        os << std::endl;
+        }
+     os << "];" << std::endl;
+     }
 };
+
+
 typedef std::vector<Face> Face_vector;

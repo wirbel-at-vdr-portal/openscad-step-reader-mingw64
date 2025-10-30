@@ -12,6 +12,8 @@
  * GNU Lesser General Public License for more details.
  */
 #pragma once
+#include "triangle.h"      // Face, std::vector
+#include <TopoDS_Face.hxx> // TopoDS_Face
 
 Face tessellate_face(const TopoDS_Face& aFace);
-Face_vector tessellate_shape (const TopoDS_Shape& shape);
+std::vector<Face> tessellate_shape(const TopoDS_Shape& shape);
